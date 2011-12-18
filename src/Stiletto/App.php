@@ -6,6 +6,15 @@ class App
     protected $config;
     protected $cwd;
 
+    protected static $appInstance;
+
+    public static function getConfig($key)
+    {
+
+    }
+
+    public static function
+
     public function __construct()
     {
         $env = getenv('STILETTO_ENV');
@@ -18,7 +27,7 @@ class App
         $cwd = getcwd();
         define('APP_PATH', realpath("$cwd/../app"));
 
-        $configFilePath = APP_PATH . '/config.php';
+        $configFilePath = APP_PATH . '/config/config.php';
         if (file_exists($configFilePath)) {
             $this->config = include $configFilePath;
         } else {
