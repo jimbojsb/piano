@@ -5,15 +5,7 @@ class App
     protected $env;
     protected $config;
     protected $cwd;
-
-    protected static $appInstance;
-
-    public static function getConfig($key)
-    {
-
-    }
-
-    public static function
+    protected $router;
 
     public function __construct()
     {
@@ -27,6 +19,11 @@ class App
         $cwd = getcwd();
         define('APP_PATH', realpath("$cwd/../app"));
 
+        require_once __DIR__ . '/Autoloader.php';
+        Autoloader::register();
+
+        $this->router = new Router();
+
         $configFilePath = APP_PATH . '/config/config.php';
         if (file_exists($configFilePath)) {
             $this->config = include $configFilePath;
@@ -34,14 +31,19 @@ class App
             throw new \Exception($configFilePath . " not found");
         }
 
-        require_once __DIR__ . '/Autoloader.php';
-        Autoloader::register();
+
+
+
+    }
+
+    public function route($route, $callback)
+    {
+        $this->router->addRoute($route, $callback);
     }
 
     public function run()
     {
-        $router = new Router(APP_PATH . '/routes.php', $this);
-        $callback = $router->route();
+        $callback = $this->router->route();
 
         $request = new Request();
 
