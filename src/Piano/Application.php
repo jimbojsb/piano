@@ -3,7 +3,6 @@ namespace Piano;
 
 class Application
 {
-    protected $router;
     protected $dispatcher;
     protected $request;
     protected $response;
@@ -21,16 +20,33 @@ class Application
         );
         $this->request = new Request($_SERVER);
         $this->response = new Response();
+        $this->dispatcher = new Dispatcher();
     }
 
     public function loadConfigFile($configFile)
     {
-        $this->config = Config::fromFile($configFile);
+        $this->config = Config::fromFile($configFile, $this->environment);
+    }
+
+    /**
+     * @param $route
+     * @return Route
+     */
+    public function route($route)
+    {
+        $r = new Route($route);
+        $this->dispatcher->addRoute($r);
+        return $r;
+
     }
 
     public function run()
     {
-
+        $this->dispatcher->setConfig($this->config);
+        while (!$this->request->hasBeenDispatched()) {
+            $response = $this->dispatcher->dispatch($this->request);
+        }
+        echo $response;
     }
 
 
@@ -38,5 +54,10 @@ class Application
     {
         $this->environment = $environment;
         return $this;
+    }
+
+    public function getConfig()
+    {
+        return $this->config;
     }
 }

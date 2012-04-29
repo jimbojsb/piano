@@ -5,8 +5,10 @@ class Route
 {
     protected $path;
     protected $method;
-    protected $callback;
+    protected $controller;
+    protected $action;
     protected $acl;
+
 
     public function __construct($route)
     {
@@ -20,9 +22,10 @@ class Route
         $this->path = $path;
     }
 
-    public function to($callback)
+    public function to($controller, $action)
     {
-        $this->callback = $callback;
+        $this->controller = $controller;
+        $this->action = $action;
         return $this;
     }
 
@@ -36,6 +39,7 @@ class Route
     {
 
     }
+
 
     public function match(Request $request)
     {
@@ -51,5 +55,15 @@ class Route
         if ($pathMatches) {
             return true;
         }
+    }
+
+    public function getController()
+    {
+        return $this->controller;
+    }
+
+    public function getAction()
+    {
+        return $this->action;
     }
 }
