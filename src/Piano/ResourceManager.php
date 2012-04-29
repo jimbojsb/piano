@@ -1,5 +1,6 @@
 <?php
-namespace Stiletto;
+namespace Piano;
+
 class ResourceManager
 {
 
