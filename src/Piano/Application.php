@@ -9,8 +9,19 @@ class Application
     protected $environment;
     protected $config;
 
-    public function __construct()
+    public function __construct($env, $config = null)
     {
+        if (null !== $env) {
+            $this->environment = $env;
+        } else {
+            throw new Exception;
+        }
+
+        if (null !== $config) {
+            $this->config = Config::fromFile($config);
+        }
+
+
         define('APP_PATH', realpath(getcwd() . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR));
         set_include_path(
             implode(
@@ -50,7 +61,7 @@ class Application
     }
 
 
-    public function setEnvironment($environment)
+    public function getEnvironment($environment)
     {
         $this->environment = $environment;
         return $this;
