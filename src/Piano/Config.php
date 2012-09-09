@@ -13,14 +13,14 @@ class Config
         }
     }
 
-    public static function fromFile($configFile, $env = null)
+    public static function fromFile($configFile, $env)
     {
         $configOptions = include $configFile;
         if (is_array($configOptions)) {
             if ($env && isset($configOptions[$env])) {
                 $envConfigOptions = $configOptions[$env];
-                if ($envConfigOptions["extends"]) {
-                    $configOptions = array_merge_recursive($configOptions[$envConfigOptions["extends"]], $envConfigOptions);
+                if ($envConfigOptions["inherit"]) {
+                    $configOptions = array_merge_recursive($configOptions[$envConfigOptions["inherit"]], $envConfigOptions);
                 } else {
                     $configOptions = $envConfigOptions;
                 }

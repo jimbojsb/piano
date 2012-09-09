@@ -1,16 +1,14 @@
 <?php
-namespace Piano;
+namespace Piano\Dispatcher;
 
-class Route
+use \Piano\Request;
+
+class StandardRoute extends AbstractRoute
 {
-    protected $path;
     protected $method;
-    protected $controller;
-    protected $action;
-    protected $acl;
+    protected $path;
 
-
-    public function __construct($route)
+    public function __construct($route, $params)
     {
         if (strpos($route, ' ') !== false) {
             list($method, $path) = explode(' ', $route);
@@ -20,26 +18,8 @@ class Route
         }
         $this->method = $method;
         $this->path = $path;
+        $this->params = $params;
     }
-
-    public function to($controller, $action)
-    {
-        $this->controller = $controller;
-        $this->action = $action;
-        return $this;
-    }
-
-
-    public function allow($role)
-    {
-
-    }
-
-    public function deny($role)
-    {
-
-    }
-
 
     public function match(Request $request)
     {
@@ -47,7 +27,7 @@ class Route
         if ($request->getPath() === $this->path) {
             if (isset($this->method) && ($this->method === $_SERVER['REQUEST_METHOD'])) {
                 $pathMatches = true;
-            } else if (!isset($this->method)) {
+            } else if ($this->method === null) {
                 $pathMatches = true;
             }
         }
@@ -55,15 +35,5 @@ class Route
         if ($pathMatches) {
             return true;
         }
-    }
-
-    public function getController()
-    {
-        return $this->controller;
-    }
-
-    public function getAction()
-    {
-        return $this->action;
     }
 }

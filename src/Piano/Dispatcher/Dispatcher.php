@@ -1,12 +1,15 @@
 <?php
-namespace Piano;
+namespace Piano\Dispatcher;
+
+use \Piano\Exception,
+    \Piano\Request;
 
 class Dispatcher
 {
     protected $config;
     protected $routes = [];
 
-    public function addRoute(Route $route)
+    public function addRoute(AbstractRoute   $route)
     {
         $this->routes[] = $route;
     }
@@ -17,28 +20,24 @@ class Dispatcher
         $action = null;
         foreach ($this->routes as $route) {
             if ($route->match($request)) {
-                $controller = $route->getController();
-                $action = $route->getAction();
+                $controller = $route->getParam('controller');
+                $action = $route->getParam('action');
             }
         }
 
         if ($controller && $action) {
-            $controllerNamespace = "\\";
-            if ($this->config->namespace) {
-                $controllerNamespace .= $this->config->namespace;
-                $controllerNamespace .= $this->config->namespace->controller ?: '\\Controller';
-            }
+            $controllerNamespace = "\\" . $this->config->app->namespace . "\\Controller";
 
             $controllerName = ucfirst(strtolower($controller));
             $controllerClassName = "$controllerNamespace\\$controllerName";
-            $controllerFilename = APP_PATH . DIRECTORY_SEPARATOR . "controllers" . DIRECTORY_SEPARATOR . $controllerName . ".php";
+            $controllerFilename = APP_PATH . "/app/controllers/$controllerName.php";
 
             if (file_exists($controllerFilename)) {
                require_once $controllerFilename;
                $controller = new $controllerClassName();
                $actionName = strtolower($action);
-               if (method_exists($controller, $actionName)) {
-                   $r = new \ReflectionMethod($controller, $actionName);
+               if (method_exists($controller, $actionName . "Action")) {
+                   $r = new \ReflectionMethod($controller, $actionName . "Action");
                    $actionParams = $r->getParameters();
                    $actionParamsToPass = array();
                    $params = $request->getParams();
@@ -49,7 +48,7 @@ class Dispatcher
                        }
                    }
 
-                   $response = call_user_func_array(array($controller, $actionName), $actionParamsToPass);
+                   $response = call_user_func_array(array($controller, $actionName . "Action"), $actionParamsToPass);
                }
             } else {
                throw new Exception(Exception::MESSAGE_ROUTE_NO_CONTROLLER, Exception::CODE_ROUTE_NO_CONTROLLER);
@@ -60,6 +59,18 @@ class Dispatcher
 
         $request->setDispatched(true);
         return $response;
+
+    }
+
+    public function loadRoutes($routesFile)
+    {
+        $routes = include $routesFile;
+        if (!is_array($routes)) {
+            throw new \Piano\Exception("no routes found in $routesFile");
+        }
+        foreach ($routes as $route => $params) {
+            $this->addRoute(new StandardRoute($route, $params));
+        }
 
     }
 
