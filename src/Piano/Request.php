@@ -8,10 +8,7 @@ class Request
     protected $path;
     protected $query;
     protected $method;
-    protected $controller;
-    protected $action;
     protected $params = array();
-    protected $dispatched = false;
 
     public function __construct($data)
     {
@@ -22,11 +19,8 @@ class Request
         $urlParts = @parse_url($data['REQUEST_URI']);
         $this->path = $urlParts['path'];
         $this->query = $urlParts['query'];
-    }
 
-    public function hasBeenDispatched()
-    {
-        return $this->dispatched;
+
     }
 
     public function getHost()
@@ -52,40 +46,5 @@ class Request
     public function getScheme()
     {
         return $this->scheme;
-    }
-
-    public function setAction($action)
-    {
-        $this->action = $action;
-    }
-
-    public function getAction()
-    {
-        return $this->action;
-    }
-
-    public function setController($controller)
-    {
-        $this->controller = $controller;
-    }
-
-    public function getController()
-    {
-        return $this->controller;
-    }
-
-    public function setParams($params)
-    {
-        $this->params = $params;
-    }
-
-    public function getParams()
-    {
-        return $this->params;
-    }
-
-    public function setDispatched($dispatched)
-    {
-        $this->dispatched = $dispatched;
     }
 }

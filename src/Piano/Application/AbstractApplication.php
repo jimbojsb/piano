@@ -11,14 +11,24 @@ abstract class AbstractApplication
         $this->resourceManager = new \Piano\ResourceManager();
     }
 
-    public function getResource($resource)
+    protected  function getResource($resource)
     {
         return $this->resourceManager->getResource($resource);
     }
 
-    public function addResource($name, $resource)
+    protected function addResource($name, $resource)
     {
         $this->resourceManager->addResource($name, $resource);
+    }
+
+    public function __get($property)
+    {
+        return $this->getResource($property);
+    }
+
+    public function __set($property, $value)
+    {
+        $this->addResource($property, $value);
     }
 
     abstract public function run();
