@@ -1,22 +1,18 @@
 <?php
 namespace Piano;
 
-use \Piano\Exception,
-    \Piano\Request,
-    \Piano\Router\AbstractRouter;
-
 class Dispatcher
 {
-    protected $router;
+    protected $application;
 
-    public function __construct(AbstractRouter $router)
+    public function __construct(Application $application)
     {
-        $this->router = $router;
+        $this->application = $application;
     }
 
     public function dispatch(Request $request)
     {
-        $matchedRoute = $this->router->route($request);
+        $matchedRoute = $this->application->router->route($request);
         if ($matchedRoute) {
             $callback = $matchedRoute['callback'];
             $availableParams = $matchedRoute['params'];
@@ -26,6 +22,12 @@ class Dispatcher
                 if (is_string($callback)) {
                     list($controllerClassName, $actionMethodName) = explode('.', $callback);
                     $controller = new $controllerClassName;
+                    if(method_exists($controller, 'setApplication')) {
+                        $controller->setApplication($this->application);
+                    }
+                    if(method_exists($controller, 'setRequest')) {
+                        $controller->setRequest($request);
+                    }
                     $callback = array($controller, $actionMethodName);
                     $r = new \ReflectionMethod($controller, $actionMethodName);
                     $methodParams = $r->getParameters();
@@ -45,6 +47,9 @@ class Dispatcher
                 $paramsToPass[] = $availableParams[$param];
             }
             $response = call_user_func_array($callback, $paramsToPass);
+            if (!$response instanceof Response) {
+                $response = new Response($response);
+            }
             return $response;
         } else {
 

@@ -1,14 +1,12 @@
 <?php
-namespace Piano\Router;
+namespace Piano;
 
-use \Piano\Route\RouteInterface,
+use \Piano\Route,
     \Piano\Request;
 
-abstract class AbstractRouter implements \ArrayAccess
+class Router implements \ArrayAccess
 {
-    private $routes = array();
-
-    abstract protected function newRoute();
+    protected $routes = array();
 
     public function route(Request $request)
     {
@@ -35,7 +33,7 @@ abstract class AbstractRouter implements \ArrayAccess
     public function offsetGet($offset)
     {
         if (!isset($this->routes[$offset])) {
-            $this->routes[$offset] = $this->newRoute();
+            $this->routes[$offset] = new Route();
         }
         return $this->routes[$offset];
     }

@@ -1,9 +1,9 @@
 <?php
-namespace Piano\Route;
+namespace Piano;
 
 use \Piano\Request;
 
-class WebRoute implements RouteInterface
+class Route
 {
     protected $method;
     protected $path;

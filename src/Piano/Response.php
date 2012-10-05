@@ -3,50 +3,22 @@ namespace Piano;
 
 class Response
 {
+    protected $statusCode = 200;
+    protected $headers;
+    protected $body ;
 
-    protected $boundVars = [];
-    protected $viewScript;
-
-    protected $body;
-    protected $headers = array();
-
-    public function __construct()
+    public function __construct($body = '')
     {
-
-    }
-
-    public function bind($key, $val)
-    {
-        $this->boundVars[$key] = $val;
-    }
-
-    public static function create(array $vars = [])
-    {
-        $r = new self();
-        foreach ($vars as $key => $val) {
-            $r->bind($key, $val);
+        if (is_object($body)) {
+            $this->body = $body->__toString();
+        } else {
+            $this->body = "$body";
         }
-        return $r;
-    }
 
-    public function renderWith($viewScript)
-    {
-        $this->viewScript = $viewScript;
-        return $this;
-    }
-
-    public function setBody($body)
-    {
-        $this->body = $body;
-    }
-
-    public function addHeader($header, $value)
-    {
-        $this->headers[$header] = $value;
     }
 
     public function __toString()
     {
-        return "RESPONSE";
+        return $this->body;
     }
 }
