@@ -8,9 +8,9 @@ use \Piano\Dispatcher,
 
 class WebApplication extends AbstractApplication
 {
-    public function __construct($path)
+    public function __construct()
     {
-        parent::__construct($path);
+        parent::__construct();
         $this->addResource('router', new WebRouter());
         $this->addResource('dispatcher', new Dispatcher($this->router));
         $this->addResource('classloader', new ClassLoader());

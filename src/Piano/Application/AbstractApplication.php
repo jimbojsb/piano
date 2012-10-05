@@ -5,9 +5,8 @@ abstract class AbstractApplication
 {
     private $resourceManager;
 
-    public function __construct($path)
+    public function __construct()
     {
-        define('APP_PATH', realpath($path));
         $this->resourceManager = new \Piano\ResourceManager();
     }
 
