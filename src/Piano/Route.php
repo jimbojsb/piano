@@ -3,7 +3,7 @@ namespace Piano;
 
 use \Piano\Request;
 
-class Route
+class Route implements RouteInterface
 {
     protected $method;
     protected $path;
@@ -50,7 +50,7 @@ class Route
 
         } else {
             $pathMatches = false;
-            $paramSearchRegex = '`:[A-z0-9_-]+`';
+            $paramSearchRegex = '`:[a-z]+`';
             $paramReplacementRegex = '(.+?)';
             $paramNames = array();
             $pathRegex = preg_replace_callback($paramSearchRegex, function($matches) use (&$paramNames, $paramReplacementRegex) {

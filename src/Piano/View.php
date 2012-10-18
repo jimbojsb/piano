@@ -24,7 +24,7 @@ class View
         if ($vars) {
             $view = clone($this);
             foreach ($vars as $key => $val) {
-                $this->$key = $val;
+                $view->$key = $val;
             }
             return $view->render($viewScript);
 
