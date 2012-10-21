@@ -14,11 +14,21 @@ class Response
         } else {
             $this->body = "$body";
         }
+    }
 
+    /**
+     * @param $code int
+     * @return Response
+     */
+    public function setStatusCode($code)
+    {
+        $this->statusCode = $code;
+        return $this;
     }
 
     public function __toString()
     {
+        http_response_code($this->statusCode);
         return $this->body;
     }
 }
