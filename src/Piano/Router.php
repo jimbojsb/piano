@@ -46,7 +46,7 @@ class Router implements \ArrayAccess
 
     }
 
-    protected function addRoute(RouteInterface $route)
+    public function addRoute($name, RouteInterface $route)
     {
         $this->routes[] = $route;
     }
