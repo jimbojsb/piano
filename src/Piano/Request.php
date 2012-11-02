@@ -19,8 +19,19 @@ class Request
         $urlParts = @parse_url($data['REQUEST_URI']);
         $this->path = $urlParts['path'];
         $this->query = $urlParts['query'];
+    }
 
-
+    public function __call($method, $params)
+    {
+        switch (strtolower($method)) {
+            case "ispost":
+            case "isget":
+            case "isput":
+            case "isdelete":
+                $actualMethod = strtoupper($this->method);
+                $requestedMethod = strtoupper(str_replace('is', '', $method));
+                return $actualMethod === $requestedMethod;
+        }
     }
 
     public function getHost()

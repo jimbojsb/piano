@@ -36,7 +36,7 @@ class Route implements RouteInterface
         unset($this->method);
     }
 
-    public function route($path, $callback, $method = null, $params = null)
+    public function route($path, $callback, $method = null, $params = array())
     {
         $this->path = $path;
         $this->callback = $callback;
