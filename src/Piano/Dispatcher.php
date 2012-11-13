@@ -47,24 +47,42 @@ class Dispatcher
                 }
                 return $response;
             } catch (\Exception $e) {
-                $paramsToPass["exception"] = $e;
-                $error = $this->getDispatchable($this->application->router->error()->getCallback());
-                $response = call_user_func_array($error, $paramsToPass);
-                if (!$response instanceof Response) {
-                    $response = new Response($response);
-                }
-                $response->setStatusCode(500);
-                return $response;
+                return $this->error($e);
             }
         } else {
-            $notfound = $this->getDispatchable($this->application->router->notfound()->getCallback());
-            $response = call_user_func_array($notfound, $paramsToPass);
+            return $this->notfound();
+        }
+    }
+
+    public function error(Exception $e = null)
+    {
+        $error = $this->getDispatchable($this->application->router->error()->getCallback());
+        if ($error) {
+            $response = call_user_func_array($error, [$e]);
             if (!$response instanceof Response) {
                 $response = new Response($response);
             }
-            $response->setStatusCode(404);
-            return $response;
+        } else {
+            $response = new Response;
         }
+
+        $response->setStatusCode(500);
+        return $response;
+    }
+
+    public function notfound()
+    {
+        $notfound = $this->getDispatchable($this->application->router->notfound()->getCallback());
+        if ($notfound) {
+            $response = call_user_func($notfound);
+            if (!$response instanceof Response) {
+                $response = new Response($response);
+            }
+        } else {
+            $response = new Response;
+        }
+        $response->setStatusCode(404);
+        return $response;
     }
 
     private function getDispatchable($callback)

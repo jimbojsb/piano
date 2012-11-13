@@ -15,4 +15,9 @@ trait ControllerTrait
     {
         $this->request = $request;
     }
+
+    public function notfound()
+    {
+        return $this->application->dispatcher->notfound();
+    }
 }
