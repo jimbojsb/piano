@@ -68,7 +68,11 @@ class Route implements RouteInterface
             }
 
             if ($pathMatches) {
-                $params = array_combine($paramNames, array_slice($matches, 1));
+                $paramValues = array_slice($matches, 1);
+                array_walk($paramValues, function(&$val) {
+                    $val = urldecode($val);
+                });
+                $params = array_combine($paramNames, $paramValues);
                 $this->params = array_merge($this->params, $params);
                 return true;
             }
