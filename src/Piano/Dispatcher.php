@@ -41,30 +41,47 @@ class Dispatcher
             }
 
             try {
-                $response = call_user_func_array($dispatchable, $paramsToPass);
-                if (!$response instanceof Response) {
-                    $response = new Response($response);
-                }
+                $response = $this->execute($dispatchable, $paramsToPass);
                 return $response;
             } catch (\Exception $e) {
-                $paramsToPass["exception"] = $e;
-                $error = $this->getDispatchable($this->application->router->error()->getCallback());
-                $response = call_user_func_array($error, $paramsToPass);
-                if (!$response instanceof Response) {
-                    $response = new Response($response);
-                }
-                $response->setStatusCode(500);
-                return $response;
+                return $this->error($e);
             }
         } else {
-            $notfound = $this->getDispatchable($this->application->router->notfound()->getCallback());
-            $response = call_user_func_array($notfound, $paramsToPass);
-            if (!$response instanceof Response) {
-                $response = new Response($response);
-            }
-            $response->setStatusCode(404);
-            return $response;
+            return $this->notfound();
         }
+    }
+
+    public function execute($dispatchable, $params = [])
+    {
+        $response = call_user_func_array($dispatchable, $params);
+        if (!$response instanceof Response) {
+            $response = new Response($response);
+        }
+        return $response;
+    }
+
+    public function error(\Exception $e = null)
+    {
+        $error = $this->getDispatchable($this->application->router->getErrorHandler()->getCallback());
+        if ($error) {
+            $response = $this->execute($error, [$e]);
+        } else {
+            $response = new Response;
+        }
+        $response->setStatusCode(500);
+        return $response;
+    }
+
+    public function notfound()
+    {
+        $notfound = $this->getDispatchable($this->application->router->getNotfoundHandler()->getCallback());
+        if ($notfound) {
+            $response = $this->execute($notfound);
+        } else {
+            $response = new Response;
+        }
+        $response->setStatusCode(404);
+        return $response;
     }
 
     private function getDispatchable($callback)

@@ -7,8 +7,32 @@ use \Piano\Route,
 class Router implements \ArrayAccess
 {
     protected $routes = array();
-    protected $notfound;
-    protected $error;
+    protected $notfoundHandler;
+    protected $errorHandler;
+
+    public function setErrorHandler($error)
+    {
+        $r = new Route();
+        $r->route(null, $error);
+        $this->errorHandler = $r;
+    }
+
+    public function getErrorHandler()
+    {
+        return $this->errorHandler;
+    }
+
+    public function setNotfoundHandler($notfound)
+    {
+        $r = new Route();
+        $r->route(null, $notfound);
+        $this->notfoundHandler = $r;
+    }
+
+    public function getNotfoundHandler()
+    {
+        return $this->notfoundHandler;
+    }
 
     public function route(Request $request)
     {
@@ -22,30 +46,6 @@ class Router implements \ArrayAccess
         }
     }
 
-    public function notfound($route = null)
-    {
-        if ($route) {
-            $r = new Route();
-            $r->route(null, $route);
-            $this->notfound = $r;
-        } else {
-            return $this->notfound;
-        }
-
-    }
-
-    public function error($route)
-    {
-        if ($route) {
-            $r = new Route();
-            $r->route(null, $route);
-            $this->error = $r;
-        } else {
-            return $this->error;
-        }
-
-    }
-
     public function addRoute($name, RouteInterface $route)
     {
         $this->routes[] = $route;
@@ -56,6 +56,10 @@ class Router implements \ArrayAccess
         return $this->routes[$offset];
     }
 
+    /**
+     * @param mixed $offset
+     * @return \Piano\Route
+     */
     public function offsetGet($offset)
     {
         if (!isset($this->routes[$offset])) {
