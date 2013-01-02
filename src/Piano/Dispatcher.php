@@ -41,10 +41,7 @@ class Dispatcher
             }
 
             try {
-                $response = call_user_func_array($dispatchable, $paramsToPass);
-                if (!$response instanceof Response) {
-                    $response = new Response($response);
-                }
+                $response = $this->execute($dispatchable, $paramsToPass);
                 return $response;
             } catch (\Exception $e) {
                 return $this->error($e);
@@ -54,30 +51,35 @@ class Dispatcher
         }
     }
 
-    public function error(Exception $e = null)
+    public function execute($dispatchable, $params = [])
     {
-        $error = $this->getDispatchable($this->application->router->error()->getCallback());
+        $response = call_user_func_array($dispatchable, $params);
+        if (!$response instanceof Response) {
+            $response = new Response($response);
+        }
+        return $response;
+    }
+
+    public function error(\Exception $e = null)
+    {
+		$error = $this->getDispatchable($this->application->router->getErrorHandler()->getCallback());
         if ($error) {
-            $response = call_user_func_array($error, [$e]);
+            $response = $this->execute($error, [$e]);
             if (!$response instanceof Response) {
                 $response = new Response($response);
             }
         } else {
             $response = new Response;
         }
-
         $response->setStatusCode(500);
         return $response;
     }
 
     public function notfound()
     {
-        $notfound = $this->getDispatchable($this->application->router->notfound()->getCallback());
+		$notfound = $this->getDispatchable($this->application->router->getNotfoundHandler()->getCallback());
         if ($notfound) {
-            $response = call_user_func($notfound);
-            if (!$response instanceof Response) {
-                $response = new Response($response);
-            }
+            $response = $this->execute($notfound);
         } else {
             $response = new Response;
         }
