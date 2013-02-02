@@ -6,12 +6,12 @@
         {
             "name": "Josh Butts",
             "email": "josh@joshbutts.com",
-            "role": "developer",
+            "role": "developer"
         }
     ],
     "autoload": {
         "psr-0": {
-            "Piano": "src/",
+            "Piano": "src/"
         }
     }
 }
