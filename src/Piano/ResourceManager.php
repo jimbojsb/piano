@@ -4,19 +4,22 @@ namespace Piano;
 class ResourceManager
 {
     private $resources;
+    private $lazyResources;
 
     public function addResource($name, $resource)
     {
-        $this->resources[$name] = $resource;
+        if ($resource instanceof \Closure) {
+            $this->lazyResources[$name] = $resource;
+        } else {
+            $this->resources[$name] = $resource;
+        }
     }
 
     public function getResource($name)
     {
-        $resource = $this->resources[$name];
-        if ($resource instanceof \Closure) {
-            return $resource();
-        } else {
-            return $resource;
+        if (!isset($this->resources[$name]) && isset($this->lazyResources[$name])) {
+            $this->resources[$name] = $this->lazyResources[$name]();
         }
+        return $this->resources[$name];
     }
 }
