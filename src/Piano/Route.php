@@ -21,23 +21,21 @@ class Route implements RouteInterface
         return $this->params;
     }
 
-    public function __call($functionName, $params)
-    {
-        list($path, $callback, $additionalParams) = $params;
-        $this->route($path, $callback, \strtoupper($functionName), $additionalParams ?: array());
-    }
-
     public function call(callable $matcher)
     {
         $this->matcher = $matcher;
         unset($this->path);
         unset($this->callback);
-        ;unset($this->params);
+        unset($this->params);
         unset($this->method);
     }
 
-    public function route($path, $callback, $method = null, $params = array())
+    public function __invoke($route, $callback, $params = array())
     {
+        list($method, $path) = explode(' ', $route);
+        if (strpos($method, ',') !== false) {
+            $method = explode(',', $method);
+        }
         $this->path = $path;
         $this->callback = $callback;
         $this->method = $method;
