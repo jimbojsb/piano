@@ -13,7 +13,7 @@ class Router implements \ArrayAccess
     public function setErrorHandler($error)
     {
         $r = new Route();
-        $r->route(null, $error);
+        $r(null, $error);
         $this->errorHandler = $r;
     }
 
@@ -25,7 +25,7 @@ class Router implements \ArrayAccess
     public function setNotfoundHandler($notfound)
     {
         $r = new Route();
-        $r->route(null, $notfound);
+        $r(null, $notfound);
         $this->notfoundHandler = $r;
     }
 
@@ -48,7 +48,7 @@ class Router implements \ArrayAccess
 
     public function addRoute($name, RouteInterface $route)
     {
-        $this->routes[] = $route;
+        $this->routes[$name] = $route;
     }
 
     public function offsetExists($offset)

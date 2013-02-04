@@ -32,13 +32,18 @@ class Route implements RouteInterface
 
     public function __invoke($route, $callback, $params = array())
     {
-        list($method, $path) = explode(' ', $route);
-        if (strpos($method, ',') !== false) {
-            $method = explode(',', $method);
+        if ($route) {
+            list($method, $path) = explode(' ', $route);
+            if (strpos($method, ',') !== false) {
+                $method = explode(',', $method);
+            }
+            $this->path = $path;
+            $this->method = $method;
+        } else {
+            $this->method = null;
+            $this->path = null;
         }
-        $this->path = $path;
         $this->callback = $callback;
-        $this->method = $method;
         $this->params = $params;
     }
 
