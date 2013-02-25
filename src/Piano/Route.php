@@ -61,11 +61,11 @@ class Route implements RouteInterface
                 return $paramReplacementRegex;
             }, $this->path);
             if (preg_match("`^$pathRegex$`", $request->getPath(), $matches)) {
-                if (is_string($this->method) && ($this->method === $_SERVER['REQUEST_METHOD'])) {
+                if (is_string($this->method) && ($this->method === $request->getMethod())) {
                     $pathMatches = true;
                 } else if ($this->method === null) {
                     $pathMatches = true;
-                } else if (is_array($this->method) && in_array($_SERVER['REQUEST_METHOD'], $this->method)) {
+                } else if (is_array($this->method) && in_array($request->getMethod(), $this->method)) {
                     $pathMatches = true;
                 }
             }

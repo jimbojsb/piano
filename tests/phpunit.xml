@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<phpunit bootstrap="bootstrap.php" stopOnFailure="false" stopOnError="false">
+    <filter>
+        <blacklist>
+            <directory>../vendor</directory>
+            <directory>.</directory>
+        </blacklist>
+    </filter>
+    <testsuite>
+        <directory suffix="Test.php">.</directory>
+    </testsuite>
+</phpunit>
