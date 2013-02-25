@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <phpunit bootstrap="bootstrap.php" stopOnFailure="false" stopOnError="false">
     <php>
-        <ini name="error_reporting" value="E_ALL & ~(E_STRICT | E_NOTICE | E_DEPRACATED)"/>
+        <ini name="error_reporting" value="E_ALL &amp; ~(E_STRICT | E_NOTICE | E_DEPRACATED)"/>
     </php>
     <filter>
         <blacklist>
