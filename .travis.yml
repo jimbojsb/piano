@@ -4,4 +4,4 @@ php:
   - 5.4
 
 script:
-  - composer install && phpunit --configuration tests/phpunit.xml
+  - composer install --dev && vendor/bin/phpunit --configuration tests/phpunit.xml
