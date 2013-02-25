@@ -26,6 +26,11 @@ class RouteTest extends PHPUnit_Framework_TestCase
             'REQUEST_METHOD' => 'GET'
         ]);
 
+        $request5 = new Request([
+            'REQUEST_URI'    => '/foo/bar/:baz',
+            'REQUEST_METHOD' => 'GET'
+        ]);
+
         $route = new Route;
         $route('GET /', 'foo');
 
@@ -50,6 +55,8 @@ class RouteTest extends PHPUnit_Framework_TestCase
         $route('GET /foo/:bar');
 
         $this->assertFalse($route->match($request3), 'route matched too specific of a route definition');
+        $this->assertFalse($route->match($request5), 'route matched too specific a request path');
+
 
     }
 

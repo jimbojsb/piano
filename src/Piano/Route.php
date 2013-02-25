@@ -43,7 +43,7 @@ class Route implements RouteInterface
     {
         $pathMatches = false;
         $paramSearchRegex = '`:[a-z0-9]+`';
-        $paramReplacementRegex = '(.+?)';
+        $paramReplacementRegex = '([^/]+?)';
         $paramNames = array();
         $pathRegex = preg_replace_callback($paramSearchRegex, function($matches) use (&$paramNames, $paramReplacementRegex) {
             $paramNames[] = str_replace(':', '', $matches[0]);
