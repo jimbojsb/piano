@@ -42,14 +42,21 @@ class Route implements RouteInterface
     public function match(Request $request)
     {
         $pathMatches = false;
-        $paramSearchRegex = '`:[a-z]+`';
+        $paramSearchRegex = '`:[a-z0-9]+`';
         $paramReplacementRegex = '(.+?)';
         $paramNames = array();
         $pathRegex = preg_replace_callback($paramSearchRegex, function($matches) use (&$paramNames, $paramReplacementRegex) {
             $paramNames[] = str_replace(':', '', $matches[0]);
             return $paramReplacementRegex;
         }, $this->path);
-        if (preg_match("`^$pathRegex$`", $request->getPath(), $matches)) {
+        $requestPath = $request->getPath();
+        if (substr_count($request->getPath(), '/') > 1 && substr($requestPath, strlen($requestPath) - 1) == '/') {
+            $matchablePath = substr($requestPath, 0, strlen($requestPath) - 1);
+        } else {
+            $matchablePath = $request->getPath();
+        }
+
+        if (preg_match("`^$pathRegex$`", $matchablePath, $matches)) {
             if (is_string($this->method) && ($this->method === $request->getMethod())) {
                 $pathMatches = true;
             } else if ($this->method === null) {
