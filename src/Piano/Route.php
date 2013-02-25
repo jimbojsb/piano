@@ -21,14 +21,6 @@ class Route implements RouteInterface
         return $this->params;
     }
 
-    public function call(callable $matcher)
-    {
-        $this->matcher = $matcher;
-        unset($this->path);
-        unset($this->callback);
-        unset($this->params);
-        unset($this->method);
-    }
 
     public function __invoke($route, $callback, $params = array())
     {
@@ -49,36 +41,33 @@ class Route implements RouteInterface
 
     public function match(Request $request)
     {
-        if ($this->matcher) {
-
-        } else {
-            $pathMatches = false;
-            $paramSearchRegex = '`:[a-z]+`';
-            $paramReplacementRegex = '(.+?)';
-            $paramNames = array();
-            $pathRegex = preg_replace_callback($paramSearchRegex, function($matches) use (&$paramNames, $paramReplacementRegex) {
-                $paramNames[] = str_replace(':', '', $matches[0]);
-                return $paramReplacementRegex;
-            }, $this->path);
-            if (preg_match("`^$pathRegex$`", $request->getPath(), $matches)) {
-                if (is_string($this->method) && ($this->method === $request->getMethod())) {
-                    $pathMatches = true;
-                } else if ($this->method === null) {
-                    $pathMatches = true;
-                } else if (is_array($this->method) && in_array($request->getMethod(), $this->method)) {
-                    $pathMatches = true;
-                }
-            }
-
-            if ($pathMatches) {
-                $paramValues = array_slice($matches, 1);
-                array_walk($paramValues, function(&$val) {
-                    $val = urldecode($val);
-                });
-                $params = array_combine($paramNames, $paramValues);
-                $this->params = array_merge($this->params, $params);
-                return true;
+        $pathMatches = false;
+        $paramSearchRegex = '`:[a-z]+`';
+        $paramReplacementRegex = '(.+?)';
+        $paramNames = array();
+        $pathRegex = preg_replace_callback($paramSearchRegex, function($matches) use (&$paramNames, $paramReplacementRegex) {
+            $paramNames[] = str_replace(':', '', $matches[0]);
+            return $paramReplacementRegex;
+        }, $this->path);
+        if (preg_match("`^$pathRegex$`", $request->getPath(), $matches)) {
+            if (is_string($this->method) && ($this->method === $request->getMethod())) {
+                $pathMatches = true;
+            } else if ($this->method === null) {
+                $pathMatches = true;
+            } else if (is_array($this->method) && in_array($request->getMethod(), $this->method)) {
+                $pathMatches = true;
             }
         }
+
+        if ($pathMatches) {
+            $paramValues = array_slice($matches, 1);
+            array_walk($paramValues, function(&$val) {
+                $val = urldecode($val);
+            });
+            $params = array_combine($paramNames, $paramValues);
+            $this->params = array_merge($this->params, $params);
+            return true;
+        }
+        return false;
     }
 }
