@@ -20,7 +20,9 @@ class Request
         $urlParts = @parse_url($data['REQUEST_URI']);
         $this->path = $urlParts['path'];
         $this->query = $urlParts['query'];
-        $this->headers = getallheaders();
+        if (function_exists('getallheaders')) {
+            $this->headers = getallheaders();
+        }
     }
 
     public function __call($method, $params)
