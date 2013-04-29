@@ -9,6 +9,7 @@ class Request
     protected $query;
     protected $method;
     protected $params = array();
+    protected $headers = [];
 
     public function __construct($data)
     {
@@ -19,6 +20,7 @@ class Request
         $urlParts = @parse_url($data['REQUEST_URI']);
         $this->path = $urlParts['path'];
         $this->query = $urlParts['query'];
+        $this->headers = getallheaders();
     }
 
     public function __call($method, $params)
@@ -57,5 +59,15 @@ class Request
     public function getScheme()
     {
         return $this->scheme;
+    }
+
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
+    public function getHeader($headerName)
+    {
+        return $this->headers[$headerName];
     }
 }

@@ -5,15 +5,26 @@ class Response
 {
     protected $statusCode = 200;
     protected $headers = array();
-    protected $body ;
+    protected $body;
 
     public function __construct($body = '')
+    {
+        $this->setBody($body);
+    }
+
+    public function setBody($body)
     {
         if (is_object($body)) {
             $this->body = $body->__toString();
         } else {
             $this->body = "$body";
         }
+    }
+
+    public function asJson()
+    {
+        $this->addHeader('Content-type', 'application/json');
+        return $this;
     }
 
     /**

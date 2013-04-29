@@ -3,22 +3,23 @@ namespace Piano;
 
 class Dispatcher
 {
-    protected $application;
     protected $request;
+    protected $router;
 
-    public function __construct(Application $application)
+    public function __construct(Router $router)
     {
-        $this->application = $application;
+        $this->router = $router;
     }
 
     public function dispatch(Request $request)
     {
         $this->request = $request;
         $paramsToPass = array();
-        $matchedRoute = $this->application->router->route($request);
+        $matchedRoute = $this->router->route($request);
         if ($matchedRoute) {
             $callback = $matchedRoute['callback'];
             $availableParams = $matchedRoute['params'];
+            $availableParams['_request'] = $request;
             $requestedParams = array();
             $dispatchable = $this->getDispatchable($callback);
 
@@ -62,7 +63,7 @@ class Dispatcher
 
     public function error(\Exception $e = null)
     {
-		$error = $this->getDispatchable($this->application->router->getErrorHandler()->getCallback());
+		$error = $this->getDispatchable($this->router->getErrorHandler()->getCallback());
         if ($error) {
             $response = $this->execute($error, [$e]);
             if (!$response instanceof Response) {
@@ -77,7 +78,7 @@ class Dispatcher
 
     public function notfound()
     {
-		$notfound = $this->getDispatchable($this->application->router->getNotfoundHandler()->getCallback());
+		$notfound = $this->getDispatchable($this->router->getNotfoundHandler()->getCallback());
         if ($notfound) {
             $response = $this->execute($notfound);
         } else {
@@ -94,13 +95,7 @@ class Dispatcher
         } else if (is_string($callback)) {
             list($controllerClassName, $actionMethodName) = explode('.', $callback);
             $controller = new $controllerClassName;
-            if(method_exists($controller, 'setApplication')) {
-                $controller->setApplication($this->application);
-            }
-            if(method_exists($controller, 'setRequest')) {
-                $controller->setRequest($this->request);
-            }
-            $callback = array($controller, $actionMethodName);
+            $callback = [$controller, $actionMethodName];
             return $callback;
         }
     }
