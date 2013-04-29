@@ -21,7 +21,7 @@ class Request
         $this->path = $urlParts['path'];
         $this->query = $urlParts['query'];
         if (function_exists('getallheaders')) {
-            $this->headers = getallheaders();
+            $this->headers = \getallheaders();
         }
     }
 
