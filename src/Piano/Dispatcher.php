@@ -5,10 +5,16 @@ class Dispatcher
 {
     protected $request;
     protected $router;
+    protected $controllerClassNamespace;
 
     public function __construct(Router $router)
     {
         $this->router = $router;
+    }
+
+    public function setControllerClassNamespace($controllerClassNamespace)
+    {
+        $this->controllerClassNamespace = $controllerClassNamespace;
     }
 
     public function dispatch(Request $request)
@@ -94,6 +100,9 @@ class Dispatcher
             return $callback;
         } else if (is_string($callback)) {
             list($controllerClassName, $actionMethodName) = explode('.', $callback);
+            if ($this->controllerClassNamespace) {
+                $controllerClassName = $this->controllerClassNamespace . '\\' . $controllerClassName;
+            }
             $controller = new $controllerClassName;
             $callback = [$controller, $actionMethodName];
             return $callback;
