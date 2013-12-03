@@ -6,6 +6,8 @@ class Dispatcher
     protected $request;
     protected $router;
     protected $controllerClassNamespace;
+    protected $beforeHooks = [];
+    protected $afterHooks = [];
 
     public function __construct(Router $router)
     {
@@ -19,6 +21,14 @@ class Dispatcher
 
     public function dispatch(Request $request)
     {
+        foreach ($this->beforeHooks as $beforeHook) {
+            if (is_callable($beforeHook)) {
+                call_user_func_array($beforeHook, [$request]);
+            }
+        }
+
+        $response = null;
+
         $this->request = $request;
         $paramsToPass = array();
         $matchedRoute = $this->router->route($request);
@@ -41,13 +51,29 @@ class Dispatcher
 
             try {
                 $response = $this->execute($dispatchable, $paramsToPass);
-                return $response;
             } catch (\Exception $e) {
-                return $this->error($e);
+                $response = $this->error($e);
             }
         } else {
-            return $this->notfound();
+            $response = $this->notfound();
         }
+
+        foreach ($this->afterHooks as $afterHook) {
+            if (is_callable($afterHook)) {
+                call_user_func_array($afterHook, [$request, $response]);
+            }
+        }
+        return $response;
+    }
+
+    public function before(callable $callback)
+    {
+        $this->beforeHooks[] = $callback;
+    }
+
+    public function after(callable $callback)
+    {
+        $this->afterHooks[] = $callback;
     }
 
     public function execute($dispatchable, $params = [])
