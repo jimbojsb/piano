@@ -29,18 +29,10 @@ class Dispatcher
             $requestedParams = array();
             $dispatchable = $this->getDispatchable($callback);
 
-            if ($dispatchable instanceof \Closure) {
-                $r = new \ReflectionFunction($callback);
-                $methodParams = $r->getParameters();
-                foreach ($methodParams as $param) {
-                    $requestedParams[] = $param->name;
-                }
-            } else {
-                $r = new \ReflectionMethod($dispatchable[0], $dispatchable[1]);
-                $methodParams = $r->getParameters();
-                foreach ($methodParams as $param) {
-                    $requestedParams[] = $param->name;
-                }
+            $r = new \ReflectionMethod($dispatchable[0], $dispatchable[1]);
+            $methodParams = $r->getParameters();
+            foreach ($methodParams as $param) {
+                $requestedParams[] = $param->name;
             }
 
             foreach ($requestedParams as $param) {

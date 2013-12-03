@@ -9,7 +9,6 @@ class Route implements RouteInterface
     protected $path;
     protected $callback;
     protected $params = array();
-    protected $matcher;
 
     public function getCallback()
     {

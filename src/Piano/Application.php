@@ -21,7 +21,7 @@ class Application
 
     public function play()
     {
-        $this->dispatcher->dispatch(new Request($_SERVER));
+        echo $this->dispatcher->dispatch(new Request($_SERVER));
     }
 
     /**
