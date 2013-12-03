@@ -23,7 +23,11 @@ class Dispatcher
     {
         foreach ($this->beforeHooks as $beforeHook) {
             if (is_callable($beforeHook)) {
-                call_user_func_array($beforeHook, [$request]);
+                try {
+                    call_user_func_array($beforeHook, [$request]);
+                } catch (\Exception $e) {
+                    return $this->error($e);
+                }
             }
         }
 
@@ -60,7 +64,11 @@ class Dispatcher
 
         foreach ($this->afterHooks as $afterHook) {
             if (is_callable($afterHook)) {
-                call_user_func_array($afterHook, [$request, $response]);
+                try {
+                    call_user_func_array($afterHook, [$request, $response]);
+                } catch (\Exception $e) {
+                    return $this->error($e);
+                }
             }
         }
         return $response;
