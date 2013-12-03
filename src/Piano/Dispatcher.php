@@ -69,27 +69,36 @@ class Dispatcher
 
     public function error(\Exception $e = null)
     {
-		$error = $this->getDispatchable($this->router->getErrorHandler()->getCallback());
-        if ($error) {
-            $response = $this->execute($error, [$e]);
-            if (!$response instanceof Response) {
-                $response = new Response($response);
+        $response = new Response;
+        $errorHandler = $this->router->getErrorHandler();
+        if ($errorHandler) {
+            $callback = $errorHandler->getCallback();
+            $error = $this->getDispatchable($callback);
+            if ($error) {
+                $response = $this->execute($error, [$e]);
+                if (!$response instanceof Response) {
+                    $response = new Response($response);
+                }
             }
-        } else {
-            $response = new Response;
         }
+
         $response->setStatusCode(500);
         return $response;
     }
 
     public function notfound()
     {
-		$notfound = $this->getDispatchable($this->router->getNotfoundHandler()->getCallback());
-        if ($notfound) {
-            $response = $this->execute($notfound);
-        } else {
-            $response = new Response;
+        $response = new Response;
+
+        $notfoundHandler = $this->router->getNotfoundHandler();
+        if ($notfoundHandler) {
+            $callback = $notfoundHandler->getCallback();
+            $notfound = $this->getDispatchable($callback);
+            if ($notfound) {
+                $response = $this->execute($notfound);
+            }
         }
+
         $response->setStatusCode(404);
         return $response;
     }
