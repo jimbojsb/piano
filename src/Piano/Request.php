@@ -20,9 +20,10 @@ class Request
         $urlParts = @parse_url($data['REQUEST_URI']);
         $this->path = $urlParts['path'];
         $this->query = $urlParts['query'];
-        if (function_exists('getallheaders')) {
+        if (function_exists('\getallheaders')) {
             $this->headers = \getallheaders();
         }
+
     }
 
     public function __call($method, $params)
@@ -58,9 +59,9 @@ class Request
         return $this->query;
     }
 
-    public function getScheme()
+    public function isSecure()
     {
-        return $this->scheme;
+        return $this->scheme === 'https';
     }
 
     public function getHeaders()
